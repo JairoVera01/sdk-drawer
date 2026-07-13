@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SDK Drawer
 
-## Getting Started
+Un SDK embebible que abre un drawer con un mockup de reservas. Todo vive en un único
+proyecto Next.js hospedado en Vercel: el mismo proyecto sirve el loader `public/drawer.js`
+y el contenido en `/embed`.
 
-First, run the development server:
+## Instalar en otra web
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Pegar una línea (funciona en Astro, React, Angular o HTML plano):
+
+```html
+<script src="https://TU-DEPLOY.vercel.app/drawer.js"></script>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Opciones (atributos data-*)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Atributo | Valores | Default | Descripción |
+|---|---|---|---|
+| `data-app-url` | URL | `/embed` del origin del script | Contenido del iframe |
+| `data-position` | `right` \| `left` | `right` | Lado del panel |
+| `data-width` | número (px) | `460` | Ancho en escritorio |
+| `data-trigger` | `auto` \| `manual` | `auto` | `manual` no crea botón; usar la API |
+| `data-button-text` | texto | `Reservar` | Texto del botón |
+| `data-open-on-load` | `true` \| `false` | `false` | Abrir al cargar |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### API programática
 
-## Learn More
+```js
+window.SdkDrawer.open();
+window.SdkDrawer.close();
+window.SdkDrawer.toggle();
+```
 
-To learn more about Next.js, take a look at the following resources:
+Ejemplo con trigger manual (sin botón flotante, disparado por tu propio botón):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```html
+<button onclick="window.SdkDrawer.open()">Reservar ahora</button>
+<script src="https://TU-DEPLOY.vercel.app/drawer.js" data-trigger="manual"></script>
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Desarrollo
 
-## Deploy on Vercel
+```bash
+npm install
+npm run dev     # http://localhost:3000  (demo React) y /demo.html (HTML plano)
+npm test        # tests con Vitest
+npm run build   # build de producción
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `public/drawer.js` — el loader vanilla (sin build) que se instala en otras webs.
+- `app/embed/page.tsx` — el mockup de reservas que se carga dentro del iframe.
+- `app/page.tsx` y `public/demo.html` — páginas de demo (dentro y fuera de Next.js).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+
+Conectar el repo a Vercel y desplegar. El loader queda en `/drawer.js` y el contenido en
+`/embed`. Para instalar en otra web propia, pegar el `<script>` apuntando a tu deploy.
+
+## Limitaciones conocidas (MVP)
+
+- **Sin lógica real de reservas.** `/embed` es una maqueta estática (sin disponibilidad,
+  precios reales, ni backend).
+- **`frame-ancestors *`.** El header en `/embed` permite el embedding desde cualquier sitio
+  (cómodo para el MVP). Cuando haya lógica real, restringir a una allowlist en `next.config.ts`,
+  p. ej. `frame-ancestors 'self' https://tudominio.com`.
+- **Stacking context del sitio anfitrión.** El drawer usa `position: fixed` con `z-index` muy
+  alto. Si el sitio anfitrión aplica `transform`, `filter` o `will-change` a `<html>`/`<body>`,
+  eso crea un contexto de apilamiento que puede recortar o reposicionar el panel. Es una
+  limitación inherente a cualquier widget embebido por script; poco común en la práctica.
+- **`inert` en navegadores viejos.** El panel cerrado usa el atributo `inert` para sacarlo del
+  orden de tabulación. En navegadores sin soporte de `inert` (muy antiguos) ese aislamiento de
+  foco no aplica, aunque el resto funciona.
+- **Distribución solo para webs propias.** No se publica en npm/CDN para terceros; se sirve
+  `drawer.js` desde el propio deploy de Vercel.
