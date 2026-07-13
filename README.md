@@ -23,6 +23,7 @@ Pegar una línea (funciona en Astro, React, Angular o HTML plano):
 | `data-button-text` | texto | `Reservar` | Texto del botón |
 | `data-open-on-load` | `true` \| `false` | `false` | Abrir al cargar |
 | `data-accent-color` | color (hex/CSS) | (ninguno) | Color de acento interno del contenido: precios, link de promo y botón "Next" |
+| `data-title` | texto | `JIVA HILL` | Título que se muestra en el header del contenido |
 
 ### API programática
 

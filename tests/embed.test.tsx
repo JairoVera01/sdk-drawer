@@ -34,4 +34,17 @@ describe('EmbedPage (mockup de reservas)', () => {
     expect(next).toHaveStyle({ backgroundColor: 'rgb(255, 0, 0)' });
     window.history.replaceState({}, '', '/');
   });
+
+  it('shows the default title when no title param is set', () => {
+    window.history.replaceState({}, '', '/embed');
+    render(<EmbedPage />);
+    expect(screen.getByText('JIVA HILL')).toBeInTheDocument();
+  });
+
+  it('shows a custom title from the url query param', () => {
+    window.history.replaceState({}, '', '/embed?title=Hotel%20Miramar');
+    render(<EmbedPage />);
+    expect(screen.getByText('Hotel Miramar')).toBeInTheDocument();
+    window.history.replaceState({}, '', '/');
+  });
 });

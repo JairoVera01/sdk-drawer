@@ -36,10 +36,14 @@ function Stepper({ label, sub, value }: { label: string; sub: string; value: num
 
 export default function EmbedPage() {
   const [accent, setAccent] = useState<string | null>(null);
+  const [title, setTitle] = useState('JIVA HILL');
 
   useEffect(() => {
-    const value = new URLSearchParams(window.location.search).get('accent');
-    if (value) setAccent(value);
+    const params = new URLSearchParams(window.location.search);
+    const accentParam = params.get('accent');
+    if (accentParam) setAccent(accentParam);
+    const titleParam = params.get('title');
+    if (titleParam) setTitle(titleParam);
   }, []);
 
   useEffect(() => {
@@ -62,7 +66,7 @@ export default function EmbedPage() {
           <span>EUR</span>
           <span>EN</span>
         </div>
-        <span className="text-lg font-medium tracking-widest">JIVA HILL</span>
+        <span className="text-lg font-medium tracking-widest">{title}</span>
         <button
           type="button"
           aria-label="Cerrar"

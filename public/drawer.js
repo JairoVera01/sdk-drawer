@@ -55,17 +55,18 @@
       buttonText: ds.buttonText || "Reservar",
       openOnLoad: ds.openOnLoad === "true",
       accentColor: ds.accentColor || "",
+      title: ds.title || "",
     };
   }
 
-  function withAccent(appUrl, accentColor) {
-    if (!accentColor) return appUrl;
+  function buildAppUrl(config) {
     try {
-      var u = new URL(appUrl, window.location.href);
-      u.searchParams.set("accent", accentColor);
+      var u = new URL(config.appUrl, window.location.href);
+      if (config.accentColor) u.searchParams.set("accent", config.accentColor);
+      if (config.title) u.searchParams.set("title", config.title);
       return u.toString();
     } catch (e) {
-      return appUrl;
+      return config.appUrl;
     }
   }
 
@@ -113,7 +114,7 @@
       iframe.className = "sdk-iframe";
       iframe.title = "Reservas";
       iframe.referrerPolicy = "strict-origin-when-cross-origin";
-      iframe.src = withAccent(config.appUrl, config.accentColor);
+      iframe.src = buildAppUrl(config);
       panel.appendChild(iframe);
     }
 

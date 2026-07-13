@@ -56,6 +56,16 @@ describe('readConfig', () => {
     styled.dataset.accentColor = '#5266eb';
     expect(internals().readConfig(styled).accentColor).toBe('#5266eb');
   });
+
+  it('reads data-title and defaults it to empty', () => {
+    const plain = document.createElement('script');
+    plain.src = 'https://example.com/drawer.js';
+    expect(internals().readConfig(plain).title).toBe('');
+    const withTitle = document.createElement('script');
+    withTitle.src = 'https://example.com/drawer.js';
+    withTitle.dataset.title = 'Hotel Miramar';
+    expect(internals().readConfig(withTitle).title).toBe('Hotel Miramar');
+  });
 });
 
 describe('createDrawer', () => {
@@ -163,6 +173,14 @@ describe('createDrawer', () => {
     const api = internals().createDrawer(baseConfig);
     api.open();
     expect(api.root.querySelector('iframe').getAttribute('src')).toBe('https://app.test/embed');
+    api.destroy();
+  });
+
+  it('appends the title as a query param on the iframe url', () => {
+    const api = internals().createDrawer({ ...baseConfig, title: 'Hotel Miramar' });
+    api.open();
+    const src = api.root.querySelector('iframe').getAttribute('src');
+    expect(new URL(src).searchParams.get('title')).toBe('Hotel Miramar');
     api.destroy();
   });
 });
