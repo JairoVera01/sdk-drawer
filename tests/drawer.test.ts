@@ -162,4 +162,14 @@ describe('init', () => {
     expect(typeof api.close).toBe('function');
     expect(typeof api.toggle).toBe('function');
   });
+
+  it('derives config from the passed script element (currentScript path)', () => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.example.com/drawer.js';
+    const api = internals().init(script);
+    api.open();
+    const iframe = api.root.querySelector('iframe');
+    expect(iframe.getAttribute('src')).toBe('https://cdn.example.com/embed');
+    api.destroy();
+  });
 });

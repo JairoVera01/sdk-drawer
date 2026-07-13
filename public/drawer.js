@@ -2,6 +2,8 @@
 (function () {
   'use strict';
 
+  var CURRENT_SCRIPT = document.currentScript;
+
   var STYLES = [
     ':host{all:initial}',
     '*{box-sizing:border-box}',
@@ -151,10 +153,10 @@
     };
   }
 
-  function init() {
+  function init(scriptEl) {
     if (window.__sdkDrawerLoaded) return window.SdkDrawer;
     window.__sdkDrawerLoaded = true;
-    var config = readConfig();
+    var config = readConfig(scriptEl || CURRENT_SCRIPT);
     var api = createDrawer(config);
     window.SdkDrawer = api;
     if (config.openOnLoad) {
@@ -168,7 +170,7 @@
   window.__sdkDrawerInternals = { readConfig: readConfig, createDrawer: createDrawer, init: init };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', function () { init(); });
   } else {
     init();
   }
