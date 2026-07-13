@@ -49,8 +49,20 @@
       width: parseInt(ds.width, 10) || 460,
       trigger: ds.trigger === 'manual' ? 'manual' : 'auto',
       buttonText: ds.buttonText || 'Reservar',
-      openOnLoad: ds.openOnLoad === 'true'
+      openOnLoad: ds.openOnLoad === 'true',
+      accentColor: ds.accentColor || ''
     };
+  }
+
+  function withAccent(appUrl, accentColor) {
+    if (!accentColor) return appUrl;
+    try {
+      var u = new URL(appUrl, window.location.href);
+      u.searchParams.set('accent', accentColor);
+      return u.toString();
+    } catch (e) {
+      return appUrl;
+    }
   }
 
   function createDrawer(config) {
@@ -97,7 +109,7 @@
       iframe.className = 'sdk-iframe';
       iframe.title = 'Reservas';
       iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-      iframe.src = config.appUrl;
+      iframe.src = withAccent(config.appUrl, config.accentColor);
       panel.appendChild(iframe);
     }
 

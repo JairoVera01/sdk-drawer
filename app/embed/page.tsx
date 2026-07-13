@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 function postClose() {
   window.parent.postMessage({ type: 'sdk-drawer', action: 'close' }, '*');
@@ -35,6 +35,13 @@ function Stepper({ label, sub, value }: { label: string; sub: string; value: num
 }
 
 export default function EmbedPage() {
+  const [accent, setAccent] = useState<string | null>(null);
+
+  useEffect(() => {
+    const value = new URLSearchParams(window.location.search).get('accent');
+    if (value) setAccent(value);
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') postClose();
@@ -42,6 +49,8 @@ export default function EmbedPage() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  const accentStyle = accent ? { color: accent } : undefined;
 
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
@@ -66,7 +75,7 @@ export default function EmbedPage() {
 
       <div className="flex-1 overflow-y-auto px-6 py-6">
         <div className="mb-4 text-right">
-          <button type="button" className="text-sm text-amber-700">
+          <button type="button" className="text-sm text-amber-700" style={accentStyle}>
             Add Promo Code
           </button>
         </div>
@@ -90,7 +99,11 @@ export default function EmbedPage() {
             {days.map((d) => (
               <div key={d} className="py-1">
                 <span className="text-sm text-neutral-900">{d}</span>
-                {d % 3 === 0 && <span className="block text-[10px] text-neutral-400">€{400 + d}</span>}
+                {d % 3 === 0 && (
+                  <span className="block text-[10px] text-neutral-400" style={accentStyle}>
+                    €{400 + d}
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -115,6 +128,7 @@ export default function EmbedPage() {
           type="button"
           disabled
           className="rounded-md bg-neutral-200 px-6 py-2 text-sm text-neutral-500"
+          style={accent ? { backgroundColor: accent, color: '#fff' } : undefined}
         >
           Next
         </button>

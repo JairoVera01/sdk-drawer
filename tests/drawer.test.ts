@@ -46,6 +46,16 @@ describe('readConfig', () => {
     expect(cfg.trigger).toBe('manual');
     expect(cfg.buttonText).toBe('Book now');
   });
+
+  it('reads data-accent-color and defaults it to empty', () => {
+    const plain = document.createElement('script');
+    plain.src = 'https://example.com/drawer.js';
+    expect(internals().readConfig(plain).accentColor).toBe('');
+    const styled = document.createElement('script');
+    styled.src = 'https://example.com/drawer.js';
+    styled.dataset.accentColor = '#5266eb';
+    expect(internals().readConfig(styled).accentColor).toBe('#5266eb');
+  });
 });
 
 describe('createDrawer', () => {
@@ -138,6 +148,21 @@ describe('createDrawer', () => {
   it('hides the launcher when trigger is manual', () => {
     const api = internals().createDrawer({ ...baseConfig, trigger: 'manual' });
     expect(api.root.querySelector('.sdk-launcher').hidden).toBe(true);
+    api.destroy();
+  });
+
+  it('appends the accent color as a query param on the iframe url', () => {
+    const api = internals().createDrawer({ ...baseConfig, accentColor: '#5266eb' });
+    api.open();
+    const src = api.root.querySelector('iframe').getAttribute('src');
+    expect(new URL(src).searchParams.get('accent')).toBe('#5266eb');
+    api.destroy();
+  });
+
+  it('leaves the iframe url unchanged when no accent color is set', () => {
+    const api = internals().createDrawer(baseConfig);
+    api.open();
+    expect(api.root.querySelector('iframe').getAttribute('src')).toBe('https://app.test/embed');
     api.destroy();
   });
 });

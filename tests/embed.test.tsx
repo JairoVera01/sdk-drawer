@@ -26,4 +26,12 @@ describe('EmbedPage (mockup de reservas)', () => {
     expect(spy).toHaveBeenCalledWith({ type: 'sdk-drawer', action: 'close' }, '*');
     spy.mockRestore();
   });
+
+  it('applies the accent color from the url query param', () => {
+    window.history.replaceState({}, '', '/embed?accent=%23ff0000');
+    render(<EmbedPage />);
+    const next = screen.getByRole('button', { name: 'Next' });
+    expect(next).toHaveStyle({ backgroundColor: 'rgb(255, 0, 0)' });
+    window.history.replaceState({}, '', '/');
+  });
 });

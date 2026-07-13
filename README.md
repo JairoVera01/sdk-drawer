@@ -22,6 +22,7 @@ Pegar una línea (funciona en Astro, React, Angular o HTML plano):
 | `data-trigger` | `auto` \| `manual` | `auto` | `manual` no crea botón; usar la API |
 | `data-button-text` | texto | `Reservar` | Texto del botón |
 | `data-open-on-load` | `true` \| `false` | `false` | Abrir al cargar |
+| `data-accent-color` | color (hex/CSS) | (ninguno) | Color de acento interno del contenido: precios, link de promo y botón "Next" |
 
 ### API programática
 
