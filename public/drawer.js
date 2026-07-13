@@ -94,6 +94,7 @@
       iframe = document.createElement('iframe');
       iframe.className = 'sdk-iframe';
       iframe.title = 'Reservas';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
       iframe.src = config.appUrl;
       panel.appendChild(iframe);
     }
@@ -101,7 +102,7 @@
     function onKey(e) { if (e.key === 'Escape') close(); }
 
     function onMessage(e) {
-      if (config.appOrigin && e.origin !== config.appOrigin) return;
+      if (!config.appOrigin || e.origin !== config.appOrigin) return;
       var d = e.data;
       if (d && d.type === 'sdk-drawer' && d.action === 'close') close();
     }
@@ -156,7 +157,11 @@
     var config = readConfig();
     var api = createDrawer(config);
     window.SdkDrawer = api;
-    if (config.openOnLoad) api.open();
+    if (config.openOnLoad) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { api.open(); });
+      });
+    }
     return api;
   }
 

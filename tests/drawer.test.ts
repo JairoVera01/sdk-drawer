@@ -124,6 +124,17 @@ describe('createDrawer', () => {
     api.destroy();
   });
 
+  it('ignores close messages when the app origin is unknown (fail closed)', () => {
+    const api = internals().createDrawer({ ...baseConfig, appOrigin: '' });
+    api.open();
+    window.dispatchEvent(new MessageEvent('message', {
+      origin: 'https://anything.test',
+      data: { type: 'sdk-drawer', action: 'close' },
+    }));
+    expect(api.host.hasAttribute('data-open')).toBe(true);
+    api.destroy();
+  });
+
   it('hides the launcher when trigger is manual', () => {
     const api = internals().createDrawer({ ...baseConfig, trigger: 'manual' });
     expect(api.root.querySelector('.sdk-launcher').hidden).toBe(true);
